@@ -1,0 +1,7 @@
+To deploy code to the Beaglebone, first get the thing booted RW.
+ - Take out the power
+ - Hold down the user button, S2
+ - Power it up
+ - Keep holding the button till the lights start their online patterned flash (a few seconds)
+
+Then run the deploy script.
