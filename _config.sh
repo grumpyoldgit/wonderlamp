@@ -1,1 +1,1 @@
-export BONE=192.168.7.1
+export BONE=192.168.7.2
