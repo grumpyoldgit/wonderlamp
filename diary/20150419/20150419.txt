@@ -1,0 +1,45 @@
+Checked PIR inputs; will take 3-5V power. Checked beaglebone 5v output, decided to use:
+
+DGND (0v) on pin 2
+VDD_5V on pin 8
+
+Note that the pin numbers go up in pairs along the headers.
+
+There's a current restriction for that output pin (5v) but if I need to draw more, I can use the VDD_5V pin (allegedly) to draw up to 1Amp.
+
+PIR works. Trying to adjust the on-board timing and sensitivity. Quarter turn clockwise on timing has made it just super long :) turn back the other way has returned it to normal.
+
+Turning the sensitivity to anti-clockwise has resulted in a much more sensitive trigger. Waving my hand in front of it triggers immediately...
+
+So with the shortest period that this thing supports, the output stays high for 00:00:05.982 seconds.
+
+Hmm... sensitivity doesn't seem to be affected too much by changing the resistor...
+
+Moving the jumper has had a big effect on the amount of time that the output stays high. SW1 (the jumper) is now set LOW.
+
+it's now more like 00:00:04.316 seconds.
+
+Operating with SW1 totally open increases the time way too far.
+
+Just watched video on ultrasonic sensors, it looks like they'll interfere with each other which is a bummer. Although if I get ones which calibrate on boot, at least I can turn them on programmatically and maybe the auto calibration won't be a problem / interference won't be a problem... either way I need some tubing to direct the sound, right now :)
+
+Deciding on which one now, with the help of the beam width (we want the narrowest possible!!) via http://www.maxbotix.com/beampatterns.htm
+
+
+So the http://www.maxbotix.com/articles/043.htm range which is the HRXL-MaxSonar-WR range gives a nice long tall sensor range in the range we want.
+
+Essentially all the WR and WRS sensors, except for the I2C ones, give great graph:
+
+. HRXL-MaxSonar-WR Sensors
+. HRXL-MaxSonar-WRS Sensors
+. SCXL-MaxSonar-WR Sensors
+. SCXL-MaxSonar-WRS Sensors
+. XL-MaxSonar-WR Sensors
+
+Saved each of the pictures in the diary for today.
+
+Hmm... actually LIDAR is wayyy better! https://www.sparkfun.com/products/13167
+
+Just asked people to know if they've got a read on some cheaper ones. I'll check back in when they do. I've also bought some plastic cones to try and mount, and a dremel.
+
+And a chair. Because sitting.
