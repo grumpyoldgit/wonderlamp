@@ -1,0 +1,5 @@
+Got a bunch of M1000 EZ0 sensors from Zach, here's the sheet:
+
+http://maxbotix.com/documents/LV-MaxSonar-EZ_Datasheet.pdf
+
+downloaded to here.
