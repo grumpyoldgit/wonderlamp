@@ -1,0 +1,38 @@
+Back to the lab... 
+
+Let's see one of these range find first, then let's mount it and mount another and have them both going at once. Luckily I've been to some conferences recently so I have those huge badges to use..
+
+Again going into SYS_5V on pin 8, and DGND on pin 1 or 2. So I should be seeing a spike on the scope, if I had a microphone plugged in and was scoing it ;)
+
+Let's look at the output of the sensor on the scope. PWM ouput..
+
+screwholes for mounting are 3mm.
+
+My laptop screen keep dying :/ Why!?!
+
+Got two running at the same time. You can see a slight clock scew between them (phase shifts as only one channel is the source of trigger). They seem to not interfere very much at all. Very impressive!!
+
+Let's try just using the plastic cone...
+
+When buried deep into the cone at the end, the sensor will only read the shortest possible output. I think that the sound must be bouncing around in there when the walls are too close to the edge...
+
+However, when I mount it further out from the cone (about a 1/3 of the way), not only do I get good distance readings, but I also get a step function at direct line of sight of the cone wall, where outside of the cone wall (radially outward) motion makes no difference to sensor readings, but when an object (my arm) waves past that point and into line-of-sight with the sensor, the reading adjusts to the distance of my arm..
+
+Success! At least for mounting one of them. I wonder how they interfere in this mechanical configuration..
+
+Time for a photo...
+
+Captured.
+
+So the question becomes, can I poll them?
+
+Taken them out of the cones and just hooked them up to the board directly. I wonder if there's a breadboard shield that you can put on this thing... yes! But I'm not sure that it gets me much..
+
+Breaking out the pins to a breadboards off to the side... taking a picture.
+
+I've got the polling pins (currently floating, I believe) in GPIO_30 and GPIO_60. Let's code them as output pins.
+
+Write a script to code up setting the right pins to output mode (P9 is the bank on the left as you look down on the top of the board with the ethernet socket side away from you), then set them low and poll them high and low.
+
+The script works. No more interference. Woot.
+
