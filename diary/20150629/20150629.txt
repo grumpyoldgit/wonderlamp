@@ -20,3 +20,7 @@ Mounted those two on the hula hoop and making a third now. This time back to the
 
 Got three mounted. And that's as good a time as any to stop for the night. Wow. Lots more nights needed!
 
+
+
+Looking briefly at software: Looks like https://github.com/node-ffi/node-ffi can be used to call C functions from javascript, so that I'll be able to call liblo directly (or some derivative of it!).
+
