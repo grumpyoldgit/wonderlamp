@@ -1,0 +1,22 @@
+Final days of June, there's nothing like an early completion, and this is nothing like an early completion. Still, it's still June, so rock on.
+
+Objective for today and tomorrow is to create a working prototype of sensors mounted on hula hoops.
+
+On closer inspection I only have three sensors, so that might cause a problem. Still, I'll get cracking.
+
+Let's start by mounting the sensors within the cones more solidly with the dremel and glue, then check that they still work.
+
+Okay, I've glued together the base plate to the rest of the cone, drilled a hole for the wires and set the whole thing in hot glue.
+
+Turns out you have to turn off the hot glue gun as soon as you're done doing that one part.
+
+Next one I'll mount with a rubber ring twisted into an s-shape and using zip-ties onto the backplate.
+
+Yellow is PW output, blue is RX polling / input.
+
+The rubber ring mount just wouldn't sit flat. Let's try that again with smaller washers... in a while. Hot glue for now :) Actually, scratch that, I've been able to mount it using plastic screws over a single flat rubber ring. 
+
+Mounted those two on the hula hoop and making a third now. This time back to the hot glue for mounting.
+
+Got three mounted. And that's as good a time as any to stop for the night. Wow. Lots more nights needed!
+
