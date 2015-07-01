@@ -17,11 +17,11 @@ pins.forEach(function (pin) {
 
 function printPinData(x) {
 	console.log("completed setting pin mode");
-    console.log('mux = ' + x.mux);
-    console.log('pullup = ' + x.pullup);
-    console.log('slew = ' + x.slew);
-    console.log('options = ' + x.options.join(','));
-    console.log('err = ' + x.err);
+	console.log('mux = ' + x.mux);
+	console.log('pullup = ' + x.pullup);
+	console.log('slew = ' + x.slew);
+	console.log('options = ' + x.options.join(','));
+	console.log('err = ' + x.err);
 }
 
 function pollPin1() {
