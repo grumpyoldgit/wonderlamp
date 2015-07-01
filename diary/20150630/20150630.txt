@@ -1,0 +1,68 @@
+Adding one final sensor (four total now) before hooking them up to the prototype shield.
+
+Aim is still the same as yesterday - to complete a working prototype before the end of the week.
+
+Soldered up the headers on the proto cape.
+
+Extension male/female leads are enough to get the sensors around the hula hoop to the board..
+
+Just need male cables coming off it.
+
+Hooking up the power hookup wires to the cape first.
+
+
+Now the signal wires....
+
+
+Hmm... looks like all I did to document the pins was take some pictures. So the +5V and GND being 1 and 2 and 7 and 8 respectively is easy to spot since the cape provides them for you, but the signal wires..
+
+// node script for development purposes
+
+var b = require('bonescript');
+
+var pins = ["P9_11", "P9_12"];
+
+pins.forEach(function (pin) {
+	if (b.pinMode(pin, b.OUTPUT)) {
+		console.log("able to set pin mode, initializing to zero");
+		b.digitalWrite(pin, b.LOW);
+	} else {
+		console.log("unable to set pin mode");
+	}
+
+	b.getPinMode(pin, printPinData);
+});
+
+function printPinData(x) {
+	console.log("completed setting pin mode");
+	console.log('mux = ' + x.mux);
+	console.log('pullup = ' + x.pullup);
+	console.log('slew = ' + x.slew);
+	console.log('options = ' + x.options.join(','));
+	console.log('err = ' + x.err);
+}
+
+function pollPin1() {
+	b.digitalWrite(pins[1], b.HIGH);
+	setTimeout(function () {b.digitalWrite(pins[1], b.LOW)}, 1);
+	setTimeout(pollPin0,5);	
+}
+
+function pollPin0() {
+	b.digitalWrite(pins[0], b.HIGH);
+	setTimeout(function () {b.digitalWrite(pins[0], b.LOW)}, 1);
+	setTimeout(pollPin1,5);
+}
+
+pollPin0(); // kick it all off
+
+
+So the script shows P9_11 and P9_12 being used to poll for signal. For each of those, there needs to be a pin for reading the output.
+
+So I'll add to the polling pins (output from the beaglebone), P9_13 and P9_14.
+
+For the reading (input to the beaglebone), I'll use P8_07, P8_08, P8_09 and P8_10.
+
+
+Fitted the cape, and I'm out of time. Shit. Okay so probably two more nights on this before it's at least complete enough to know what's not functioning :)
+
