@@ -1,0 +1,19 @@
+Tied the beaglebone to the center of the hula hoop.
+
+Just need to load the new code on to the beaglebone. From before:
+
+"""
+So the script shows P9_11 and P9_12 being used to poll for signal. For each of those, there needs to be a pin for reading the output.
+
+So I'll add to the polling pins (output from the beaglebone), P9_13 and P9_14.
+
+For the reading (input to the beaglebone), I'll use P8_07, P8_08, P8_09 and P8_10.
+
+"""
+
+
+So I've coded that up, and now I've written that to the beaglebone using my cool writer script 
+
+. _deployFilesystemDirectoryToBeagleboneRoot.sh
+
+I should probably confirm that before plugging it into the sensors. I'm already out of time for today.
