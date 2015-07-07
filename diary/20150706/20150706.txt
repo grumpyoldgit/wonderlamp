@@ -1,0 +1,66 @@
+today I will be wiring up the sensors and doing the first test of the new code. First, the sensors..
+
+Plugged in the power first.
+
+So going around the ring from orange cone, it goes:
+
+cone color  ||  polling timing pin  ||  output polling pin
+
+orange ||  P9_13  ||  P8_7
+green ||  P9_14  ||  P8_9
+green ||  P9_11  ||  P8_10
+purple ||  P9_12  ||  P8_8
+
+Double-checked the polarity of the power supplies for them too, now let's look at the best way to write the assignments in code:
+
+var pollingControlPins = ["P9_11", "P9_12", "P9_13", "P9_14"];
+var pollingReadDataPins = ["P8_07", "P8_08", "P8_09", "P8_10"];
+
+should actually be:
+
+var pollingControlPins = ["P9_13", "P9_14", "P9_11", "P9_12"];
+var pollingReadDataPins = ["P8_07", "P8_09", "P8_10", "P8_08"];
+
+
+
+
+loaded the code.. I still can't set the input pins properly, I should concentrate on that and reading the PWM, which is 0.016 KHz or 16 Hz. Which is fast enough to be able to load into an RC circuit with a period of say, 2 cycles of that and then read the value that way...
+
+Or I could just read it using event binding via interruptCallback a'la:
+
+root@beaglebone:~# cat test.js
+var b = require('bonescript');
+var inputPin = 'P8_07';
+b.pinMode(inputPin, b.INPUT);
+b.attachInterrupt(inputPin, true, b.CHANGE, interruptCallback);
+setTimeout(detach, 12000);
+
+function interruptCallback(x) {
+    console.log(JSON.stringify(x));
+}
+
+function detach() {
+    b.detachInterrupt(inputPin);
+    console.log('Interrupt detached');
+}
+
+
+which works when there's only one process competing for the port, but not otherwise. So let's kill those others:
+
+# systemctl stop cloud9.socket
+# systemctl stop bonescript.socket
+
+weird, that hasn't made it work. Yet it worked from the browser...
+
+Okay so PWM probably isn't the best idea for the input. I should be using analog, surely. Which means a voltage divider (simpler) and a different port than I'm soldered to.
+
+
+
+Okay, so I'm going to do some research into connectors now.
+
+So just header connectors, and enough 4-core wire with a thick enough gauge that voltage loss isn't an issue.
+
+
+Female headers on cape, 4 pins per header, the holes in the middle of the cape are 11 x 14.
+
+
