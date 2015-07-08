@@ -4,13 +4,8 @@ var b = require('bonescript');
 
 // we poll the devices around in a ring.
 
-/*
 var pollingControlPins = ["P9_11", "P9_12", "P9_13", "P9_14"];
-var pollingReadDataPins = ["P8_07", "P8_08", "P8_09", "P8_10"];
-*/
-
-var pollingControlPins = ["P9_13", "P9_14", "P9_11", "P9_12"];
-var pollingReadDataPins = ["P8_07", "P8_09", "P8_10", "P8_08"];
+var pollingReadDataPins = ["P9_35", "P9_36", "P9_37", "P9_38"];
 
 // set up the sensor control ports by setting them to low
 //  - they later go high to ask the sensors to provide accurate data
@@ -29,11 +24,12 @@ pollingControlPins.forEach(function (pin) {
 	b.getPinMode(pin, printPinData);
 });
 
-// set up the PWM input pins from the sensors
+// set up the analog input pins from the sensors
 // a sensible value for that sensor is only available
 // when the pollingControlPin for that sensor is high
 
 /*
+
 pollingReadDataPins.forEach(function (pin) {
 	console.log("setting up pin " + pin);
 	if (b.pinMode(pin, b.INPUT)) {
@@ -44,6 +40,7 @@ pollingReadDataPins.forEach(function (pin) {
 
 	b.getPinMode(pin, printPinData);
 });
+
 */
 
 function printPinData(x) {
@@ -77,9 +74,12 @@ function pollSensor1() {
 }
 
 function pollSensor0() {
-	console.log("polling sensors");
 	b.digitalWrite(pollingControlPins[0], b.HIGH);
-	// TODO: read sensor0
+	// analog read sensor0
+	b.analogRead(pollingReadDataPins[0], function(x) {
+		console.log("x.value = " + x.value);
+		//console.log("x.err = " + x.err);
+	});
 	setTimeout(function () {b.digitalWrite(pollingControlPins[0], b.LOW)}, 1);
 	setTimeout(pollSensor1,5);
 }
