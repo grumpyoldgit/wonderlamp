@@ -43,6 +43,8 @@ pollingReadDataPins.forEach(function (pin) {
 
 */
 
+var s = [0,0,0,0];
+
 function printPinData(x) {
 	console.log("completed setting pin mode");
 	console.log('mux = ' + x.mux);
@@ -55,6 +57,10 @@ function printPinData(x) {
 function pollSensor3() {
 	b.digitalWrite(pollingControlPins[3], b.HIGH);
 	// TODO: read sensor3
+	b.analogRead(pollingReadDataPins[3], function(x) {
+		s[3] = x.value;
+	});
+
 	setTimeout(function() {b.digitalWrite(pollingControlPins[3], b.LOW)}, 1);
 	setTimeout(pollSensor0,5);
 }
@@ -62,6 +68,10 @@ function pollSensor3() {
 function pollSensor2() {
 	b.digitalWrite(pollingControlPins[2], b.HIGH);
 	// TODO: read sensor2
+	b.analogRead(pollingReadDataPins[2], function(x) {
+		s[2] = x.value;
+	});
+
 	setTimeout(function() {b.digitalWrite(pollingControlPins[2], b.LOW)}, 1);
 	setTimeout(pollSensor3,5);
 }
@@ -69,16 +79,22 @@ function pollSensor2() {
 function pollSensor1() {
 	b.digitalWrite(pollingControlPins[1], b.HIGH);
 	// TODO: read sensor1
+	b.analogRead(pollingReadDataPins[1], function(x) {
+		s[1] = x.value;
+	});
+
 	setTimeout(function () {b.digitalWrite(pollingControlPins[1], b.LOW)}, 1);
 	setTimeout(pollSensor2,5);	
 }
 
 function pollSensor0() {
 	b.digitalWrite(pollingControlPins[0], b.HIGH);
+	console.log(s[0].toFixed(4) + "," + s[1].toFixed(4) + "," + s[2].toFixed(4) + "," + s[3].toFixed(4));
+
 	// analog read sensor0
+
 	b.analogRead(pollingReadDataPins[0], function(x) {
-		console.log("x.value = " + x.value);
-		//console.log("x.err = " + x.err);
+		s[0] = x.value;
 	});
 	setTimeout(function () {b.digitalWrite(pollingControlPins[0], b.LOW)}, 1);
 	setTimeout(pollSensor1,5);

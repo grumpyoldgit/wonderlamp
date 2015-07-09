@@ -1,0 +1,64 @@
+Electrically connected all the sensors, just run a test to see if the whole setup works - walked around, took video, exported the sensor data to data.txt (in today's folder!).
+
+http://automata.cc/osc-web looks like it will have everything I need to send OSC to a remote controller.
+
+Having to install socket.io on the beaglebone first:
+
+# npm install socket.io
+
+To do that, I first have to get to the Internet...
+
+# route add default gw 192.168.7.1
+
+# echo nameserver 8.8.8.8 > /etc/resolv.conf
+
+
+Then had to turn on Internet sharing from wireless to beaglebone in preferences in sharing. Then had to reconfigure the networking to use dhcp.
+
+Hmm... had to reflash it (just by shoving the sd disk in), that didn't go so well! Maybe I'll just use a network cable for the next attempt. Clearly I need an install script that just copies on everything needed onto a new beaglebone...
+
+
+
+Hmm... if I told you that I didn't have a cat5 networking cable in the house, would you believe me? I guess I better proxy or tunnel or whatever..
+
+
+So no more fucking with that, let's just use SSH and a web proxy (Charles, in this case)...
+
+npm config set proxy http://192.168.7.1:8888
+npm config set https-proxy http://192.168.7.1:8888
+npm install socket.io
+
+That worked. So I've cloned osc-web, removed the .git files and added it to /fs/root in my repo, then I synced with the device, and then on the beaglebone, issued:
+
+cd /root/osc-web
+npm install
+node bridge.js
+
+Visiting http://192.168.7.2:8081/test-app/test-app.html means that websockets will send OSC events received on 3333 to the browser (apparently).
+
+That doesn't work at all, however it's now clear that underneath all that it's actually just using 'node-osc', which is at https://github.com/TheAlphaNerd/node-osc
+
+Which you can use to do this:
+
+    var osc = require('node-osc');
+	var oscServer, oscClient;
+
+    oscServer = new osc.Server(obj.server.port, obj.server.host);
+    oscClient = new osc.Client(obj.client.host, obj.client.port);
+
+    oscClient.send('/status', socket.sessionId + ' connected');
+
+Note on and note off messages seem correct..
+
+
+
+Okay so this page: http://en.flossmanuals.net/pure-data/ch065_osc/ seems to make me think that each sensor should be it's own note, and that the amplitude should be defined from the sensor distance value.
+
+
+I've asked rob what needs to be in the OSC messages as it's not too clear. Maybe I should speak to him about it.
+
+Meanwhile let's make the smoother!
+
+
+So my rolling average cleans up the data quite a bit!
+
