@@ -1,0 +1,108 @@
+Got the production enclosure for the beaglebone - after much fucking with it I can finally remove the board (it got jammed). Trying to work with just the stock OS for a moment...
+
+Trying the OSC software that rob suggested (that he's using!)..
+
+So I think that he does TouchOSC -> OSCBridge from hexler.ner.
+
+It requires Java 6. Of course it does. Hardly any mold.
+
+
+Got a great capture, I see what I'm trying to replicate with node-osc:
+
+User Datagram Protocol, Src Port: 35998 (35998), Dst Port: 8000 (8000), contents:
+
+Message: /1/fader2 ,f
+Header
+Path: /1/fader2
+Format: ,f
+Float: 0.273632
+
+With bytes:
+
+char peer0_258[] = { /* Packet 259 */
+0x2f, 0x31, 0x2f, 0x66, 0x61, 0x64, 0x65, 0x72, 
+0x32, 0x00, 0x00, 0x00, 0x2c, 0x66, 0x00, 0x00, 
+0x3e, 0x8c, 0x19, 0x76 };
+
+So looking at the node module node-osc for that:
+
+
+var osc = require('node-osc');
+
+var client = new osc.Client('192.168.7.1', 8000);
+client.send('/oscAddress', 1, 1, 2, 3, 5, 8, function (err) {
+  client.kill();
+});
+
+Trying that first.. requires npm which requires an internet connection. And it won't download the package because of SSL errors because the OS is so out of date...
+
+apt-get update
+apt-get dist-upgrade
+
+Had to replace /etc/init.d/led_aging.sh with:
+
+#!/bin/sh -e
+### BEGIN INIT INFO
+# Provides:          led_aging.sh
+# Required-Start:    $local_fs
+# Required-Stop:     $local_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start LED aging
+# Description:       Starts LED aging (whatever that is)
+### END INIT INFO
+
+x=$(/bin/ps -ef | /bin/grep "[l]ed_acc")
+if [ ! -n "$x" -a -x /usr/bin/led_acc ]; then
+    /usr/bin/led_acc &
+fi
+
+as per https://groups.google.com/forum/#!topic/beagleboard/LPjCn4LEY2I
+
+Hmm... I should probably just use the image that I have on the sd card..
+
+
+back to :
+
+npm install node-osc
+
+Still didn't work. But a quick google shows:
+
+npm config set ca="" # tells npm to use known registras
+
+from http://blog.npmjs.org/post/78085451721/npms-self-signed-certificate-is-no-more
+
+Didn't work. Trying:
+
+npm install npm -g --ca=null
+
+Aaahahahhh the date is just wrong :)
+
+/usr/sbin/ntpdate pool.ntp.org
+
+
+woop! installing now...
+
+Moving code around.. modularizing, cleaning up.
+
+
+
+npm install node-getopt
+
+
+
+So useful!
+
+http://browsenpm.org/package.json
+
+Although probably no need for a package.json here.
+
+
+
+I've moved my 'module' scripts into node_modules and put their exports in the module.exports array.
+
+on my desktop machine, when trying to add npm installs, no bueno - because npm had a proxy set. Here's how to clear it:
+
+npm config rm proxy
+npm config rm https-proxy
+

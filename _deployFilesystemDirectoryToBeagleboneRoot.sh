@@ -10,4 +10,4 @@ else
 	exit
 fi 
 
-rsync -avz -e ssh --progress fs/* root@$BONE:/
+rsync -avz --no-o --no-g -e ssh --progress fs/* root@$BONE:/
