@@ -106,3 +106,12 @@ on my desktop machine, when trying to add npm installs, no bueno - because npm h
 npm config rm proxy
 npm config rm https-proxy
 
+
+Okay, I've added the needed npm modules to my project (and made my own modules too) so that I don't have to download anything if I have a copy of the repo!
+
+
+Installed http://www.snoize.com/MIDIMonitor/
+
+so that I can see MIDI events coming in through the OSC bridge..
+
+works with touchOSC. Will it work with my code?

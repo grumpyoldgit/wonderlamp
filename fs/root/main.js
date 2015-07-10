@@ -12,15 +12,21 @@ opt = getopt.create([
 var options = opt.parseSystem().options; // parse command line
 
 if (options['host'] == null) {
-  console.error(opt.getHelp());
-  process.exit();
+ 	console.error(opt.getHelp());
+ 	process.exit();
+}
+if (options['port'] == null) {
+	options['port'] = 8000;
 }
 
+console.log("Using host " + options['host'] + " and port " + options['port']);
 
 var b = require('bonescript');
 
 var osc = require('osc.js');
 var dsp = require('dsp.js');
+
+osc.connect(options['host'], options['port']);
 
 // we poll the devices by taking the control pins high in a ring, and reading an
 // analog value from the data pin for that sensor while its control pin is high
@@ -71,7 +77,7 @@ function pushToFaderSon() {
 
 	// add entire last read round to the dsp stack
 
-	dsp.pushSample(sample);
+	dsp.pushInput(sample);
 
 	var o = dsp.getOutput();
 	if (o != null) {
@@ -83,6 +89,8 @@ function pushToFaderSon() {
 	}
 }
 
+var count = 0;
+
 function pollSensorN(sensorIndex) {
 	b.digitalWrite(controlPins[sensorIndex], b.HIGH); // set poll pin high
 
@@ -92,22 +100,27 @@ function pollSensorN(sensorIndex) {
 
 	var nextSensorIndex = sensorIndex + 1;
 
-	if (nextSensorIndex > numberOfChannels) {
+	if (nextSensorIndex >= numberOfChannels) {
 		pushToFaderSon(); // transmit sample (if available)
 		nextSensorIndex = 0;
+		count++;
+		if (count == 500) {
+			console.log('500 samples taken');
+			process.exit();
+		}
 	}
 
 	// analog read sensorN
 	
-	b.analogRead(dataPins[number], function(x) {
-		sample[number] = x.value.toFixed(4);
+	b.analogRead(dataPins[sensorIndex], function(x) {
+		sample[sensorIndex] = x.value.toFixed(6);
 	});
 
 	// close polling pin for this sensor in 1 millisecond
-	setTimeout(function () {b.digitalWrite(controlPins[number], b.LOW)}, 1);
+	setTimeout(function () {b.digitalWrite(controlPins[sensorIndex], b.LOW)}, 1);
 
 	// read next sensor in 5 milliseconds
-	setTimeout(pollSensorN,5,nextSensorIndex);
+	setTimeout(pollSensorN,3,nextSensorIndex);
 }
 
 pollSensorN(0); // kick it all off
