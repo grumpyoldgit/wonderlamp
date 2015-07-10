@@ -1,5 +1,22 @@
 // main polling loop
 
+// read command-line arguments..
+
+var getopt = require('node-getopt');
+opt = getopt.create([
+	['' , 'host=HOST'     , 'the host running OSC to MIDI bridge.'],
+	['' , 'port=[PORT]'   , 'the UDP port for the bridge on that host (8000 is the default).'],
+	['h' , 'help'         , 'display this help'],
+	['v' , 'version'      , 'show version']
+]).bindHelp();
+var options = opt.parseSystem().options; // parse command line
+
+if (options['host'] == null) {
+  console.error(opt.getHelp());
+  process.exit();
+}
+
+
 var b = require('bonescript');
 
 var osc = require('osc.js');
@@ -13,8 +30,6 @@ var dsp = require('dsp.js');
 
 var controlPins = ["P9_11", "P9_12", "P9_13", "P9_14"];
 var dataPins = ["P9_35", "P9_36", "P9_37", "P9_38"];
-
-var client = new osc.Client('192.168.7.1', 8000);
 
 // set up the sensor control pins by setting them to low
 //  - they later go high to ask the sensors to provide accurate data
@@ -33,8 +48,6 @@ controlPins.forEach(function (pin) {
 	b.getPinMode(pin, printPinData);
 });
 
-var s = [0,0,0,0];
-
 function printPinData(x) {
 	console.log("completed setting pin mode");
 	console.log('mux = ' + x.mux);
@@ -44,83 +57,57 @@ function printPinData(x) {
 	console.log('err = ' + x.err);
 }
 
-function pollSensor3() {
-	b.digitalWrite(controlPins[3], b.HIGH);
-	
-	b.analogRead(dataPins[3], function(x) {
-		s[3] = x.value.toFixed(4);
-	});
+var numberOfChannels = 4;
+var sample = new Array();
 
-	setTimeout(function() {b.digitalWrite(controlPins[3], b.LOW)}, 1);
-	setTimeout(pollSensor0,5);
-}
+/*
+this function pushes a single sample to the DSP stack, and retrieves
+a single sample from the DSP stack. If the stack decides that there is no
+data worth sending, it will return null. If the stack decides that some
+channels are not worth sending, just those values will be null.
+*/
 
-function pollSensor2() {
-	b.digitalWrite(controlPins[2], b.HIGH);
-	
-	b.analogRead(dataPins[2], function(x) {
-		s[2] = x.value.toFixed(4);
-	});
-
-	setTimeout(function() {b.digitalWrite(controlPins[2], b.LOW)}, 1);
-	setTimeout(pollSensor3,5);
-}
-
-function pollSensor1() {
-	b.digitalWrite(controlPins[1], b.HIGH);
-	
-	b.analogRead(dataPins[1], function(x) {
-		s[1] = x.value.toFixed(4);
-	});
-
-	setTimeout(function () {b.digitalWrite(controlPins[1], b.LOW)}, 1);
-	setTimeout(pollSensor2,5);	
-}
-
-function pollSensor0() {
-	b.digitalWrite(controlPins[0], b.HIGH);
+function pushToFaderSon() {
 
 	// add entire last read round to the dsp stack
 
-	dsp.pushSample(s);
+	dsp.pushSample(sample);
 
-	// send it to the lighting controller
-	
-	client.send('/1/fader1', s[1].toFixed(4));
-	client.send('/1/fader2', s[2].toFixed(4));
-	client.send('/1/fader3', s[3].toFixed(4));
-
-
-	// analog read sensor0
-
-	b.analogRead(dataPins[0], function(x) {
-		s[0] = x.value.toFixed(4);
-	});
-	setTimeout(function () {b.digitalWrite(controlPins[0], b.LOW)}, 1);
-	setTimeout(pollSensor1,5);
+	var o = dsp.getOutput();
+	if (o != null) {
+		for (var i=0; i<o.length; i++) {
+			if (o[i] != null) {
+				osc.transmitFaderData(i, o[i]);
+			}
+		}
+	}
 }
 
-// read command-line arguments..
+function pollSensorN(sensorIndex) {
+	b.digitalWrite(controlPins[sensorIndex], b.HIGH); // set poll pin high
 
-// node-getopt oneline example.
-opt = require('node-getopt').create([
-  ['h' , 'host=ARG'            , 'the host running OSC to MIDI bridge.'],
-  ['p' , 'port=[ARG]'          , 'the UDP port for the bridge on that host 8000 is the default.'],
-  ['h' , 'help'                , 'display this help'],
-  ['v' , 'version'             , 'show version']
-])              // create Getopt instance
-.bindHelp()     // bind option 'help' to default action
-.parseSystem(); // parse command line
+	if (sample[sensorIndex] == undefined) { // autoscale sample size to number of sensors
+		sample.push(0);
+	}
 
-console.info(opt);
+	var nextSensorIndex = sensorIndex + 1;
 
-exit();
+	if (nextSensorIndex > numberOfChannels) {
+		pushToFaderSon(); // transmit sample (if available)
+		nextSensorIndex = 0;
+	}
 
-osc.connect('192.168.7.1', 8000);
+	// analog read sensorN
+	
+	b.analogRead(dataPins[number], function(x) {
+		sample[number] = x.value.toFixed(4);
+	});
 
-process.argv.forEach(function (val, index, array) {
-  console.log(index + ': ' + val);
-});
+	// close polling pin for this sensor in 1 millisecond
+	setTimeout(function () {b.digitalWrite(controlPins[number], b.LOW)}, 1);
 
+	// read next sensor in 5 milliseconds
+	setTimeout(pollSensorN,5,nextSensorIndex);
+}
 
-/// pollSensor0(); // kick it all off
+pollSensorN(0); // kick it all off
