@@ -1,1 +1,3 @@
+ Today I will get the MIDI/OSC working and send rob the packet capture..
+
  
