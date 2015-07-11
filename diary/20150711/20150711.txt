@@ -1,3 +1,30 @@
  Today I will get the MIDI/OSC working and send rob the packet capture..
 
- 
+ Requires writing coffeescript, since it turns out that node-osc is really just a wrapper around osc-min.
+
+   # added by bambam
+  m : {
+    representation : "midi"
+    split : (buffer, strict) ->
+      split = exports.splitMidi buffer
+      {value : split.midiObject, rest: split.rest}
+    toArg: : (value, strict) ->
+      throw new Error "expected midi object" if (typeof value isnt "object" and value.type isnt "midi")
+      exports.packMidiObject value
+  }
+
+is the type definition, now I need to write the parsers:
+
+packMidiObject and splitMidi
+
+Building osc-utilities.js from the .coffee file within osc-min requires calling the coffee compiler thus:
+
+sfo-m-4.local ~/Documents/beaglebone/fs/root/node_modules/osc-min/lib$ coffee osc-utilities.coffee -c
+
+And then I just deploy in the usual way and run in the usual way:
+
+sfo-m-4.local ~/Documents/beaglebone$ . _deployFilesystemDirectoryToBeagleboneRoot.sh
+root@beaglebone:~# node main.js --host 10.0.0.154 --port 12101
+
+
+And that's generating plenty of MIDI events within the MIDI listener via the OSC bridge that Rob recommended.
