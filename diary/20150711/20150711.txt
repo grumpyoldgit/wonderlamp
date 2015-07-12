@@ -28,3 +28,25 @@ root@beaglebone:~# node main.js --host 10.0.0.154 --port 12101
 
 
 And that's generating plenty of MIDI events within the MIDI listener via the OSC bridge that Rob recommended.
+
+
+
+
+
+Now for the schematic and PCB:
+
+"kicad and oshpark
+first you need to make a schematic
+you can do this on pen and paper then transfer it to the schematic capture tool
+once you do that, then kicad has this weird step of associating logical items in the schematic with what they will look like on the PCB
+then after you do that, you can make your board
+
+gerbers, trivial to export"
+
+
+Watching videos on how to use kicad.
+
+https://github.com/maskedinterrupt/BareBoneCape looks helpful!
+
+Kicad on OS X is pure bullshit - much easier on Linux. Just adapting that BareBoneCape to contain my connectors and PDs.
+
