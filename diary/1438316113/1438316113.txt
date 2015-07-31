@@ -1,0 +1,7 @@
+Got the boards back, soldered one up completely, got the book of SMDs and now I'm going to mount the first ones..
+
+Previously I used 330K and 150K giving a combined resistance to ground of R1+R2 = 480K, meaning that the current at 3.3 volts would be 3.3/480K or 0.000006875 amps or around 7uAmps
+
+And the power dissipation in the resistors would be (at peak) 3.3 * 7e-6 = 0.0000231 Watts or ~ 20uW. Which is waaay less than 1/8 of a watt which allegedly Yageo 0805's are rated at.
+
+So I'll just get to soldering them into place. Did that, seems to have worked. I'll do an end-to-end test next time, after I've made some cables on Saturday.
