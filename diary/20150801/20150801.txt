@@ -1,0 +1,15 @@
+Made one cable, just trying it out now..
+
+Okay looks like I need to run power from the power in connector now.. forgot that I made that change. 
+
+I've added a debug function; you can debug any channel now with just --debug=X where X is the number of the sensor you want to debug. It gives you a console-style oscilloscope.
+
+I've also sorted out the pin order in the code to match the board, so it works now.
+
+Although there's a problem with the last two ports; they error on analog read with:
+
+error: analogRead error: Error: EAGAIN, read
+
+So I've got to update the code to read from them. It might be a timing issue now that I'm polling six sensors.
+
+

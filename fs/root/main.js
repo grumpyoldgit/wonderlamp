@@ -6,6 +6,7 @@ var getopt = require('node-getopt');
 opt = getopt.create([
 	['' , 'host=HOST'     , 'the host running OSC to MIDI bridge.'],
 	['' , 'port=[PORT]'   , 'the UDP port for the bridge on that host (8000 is the default).'],
+	['' , 'debug=[SENSOR]' , 'dump the raw data from sensor with number SENSOR (0-5) to the console.'],
 	['h' , 'help'         , 'display this help'],
 	['v' , 'version'      , 'show version']
 ]).bindHelp();
@@ -17,6 +18,20 @@ if (options['host'] == null) {
 }
 if (options['port'] == null) {
 	options['port'] = 8000;
+}
+
+var debug = null; // which port to output to console.
+
+if (options['debug'] != null) {
+	try {
+		debug = parseInt(options['debug']);
+		if (debug < 0 || debug > 5) {
+			throw "Invalid sensor number";
+		}
+	} catch (ex){
+	 	console.error("Invalid sensor number " + opt.getHelp());
+	 	process.exit();	
+	}
 }
 
 console.log("Using host " + options['host'] + " and port " + options['port']);
@@ -34,8 +49,8 @@ osc.connect(options['host'], options['port']);
 // a sensible value for each sensor is only available
 // when the controlPin for that sensor is high
 
-var controlPins = ["P9_11", "P9_12", "P9_13", "P9_14"];
-var dataPins = ["P9_35", "P9_36", "P9_37", "P9_38"];
+var controlPins = ["P9_11", "P9_12", "P9_13", "P9_14", "P9_15", "P9_16"];
+var dataPins = ["P9_33", "P9_35", "P9_36", "P9_37", "P9_39", "P9_40"];
 
 // set up the sensor control pins by setting them to low
 //  - they later go high to ask the sensors to provide accurate data
@@ -91,7 +106,14 @@ function pushToFaderSon() {
 
 var count = 0;
 
-function pollSensorN(sensorIndex) {
+// for the debug output - needed to produce the debug 'ghetto oscilloscope'
+
+String.prototype.repeat = function( num ) {
+    return new Array( num + 1 ).join( this );
+}
+
+
+function pollSensorNumber(sensorIndex) {
 	b.digitalWrite(controlPins[sensorIndex], b.HIGH); // set poll pin high
 
 	if (sample[sensorIndex] == undefined) { // autoscale sample size to number of sensors
@@ -114,13 +136,16 @@ function pollSensorN(sensorIndex) {
 	
 	b.analogRead(dataPins[sensorIndex], function(x) {
 		sample[sensorIndex] = x.value.toFixed(6);
+		if (sensorIndex == debug) {
+			console.log("**".repeat(Math.round((x.value.toFixed(6) * 10))));
+		}
 	});
 
 	// close polling pin for this sensor in 1 millisecond
 	setTimeout(function () {b.digitalWrite(controlPins[sensorIndex], b.LOW)}, 1);
 
 	// read next sensor in 5 milliseconds
-	setTimeout(pollSensorN,3,nextSensorIndex);
+	setTimeout(pollSensorNumber,3,nextSensorIndex);
 }
 
-pollSensorN(0); // kick it all off
+pollSensorNumber(0); // kick it all off
