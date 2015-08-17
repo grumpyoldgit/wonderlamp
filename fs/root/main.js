@@ -126,10 +126,6 @@ function pollSensorNumber(sensorIndex) {
 		pushToFaderSon(); // transmit sample (if available)
 		nextSensorIndex = 0;
 		count++;
-		if (count == 1) {
-			console.log('500 samples taken');
-//			process.exit();
-		}
 	}
 
 	// analog read sensorN
