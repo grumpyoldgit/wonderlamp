@@ -2,3 +2,24 @@ So today I'm just trying out the new USR-TCP232-T modules.
 
 I want to know if they'll talk to the sensors well enough; if so then I'll draw a paper diagram of what the board to hook them up to will look like, and the case for it and how to mount it in the sensor hole, then if we decide it's the way to go I'll do a proper diagram.
 
+I've saved USR-TCP232-T24-EN%20V3.2.5.pdf to the docs folder
+
+
+Configured the device fine using Windows from VMWare with the network interface in bridged mode, using the executable in the docs folder. Took a screenshot of it working and added that to this day's diary folder.
+
+Interestingly you keep seeing the same zero-length tcp data, presumably just to check in so that you can see the module is still up and powered.
+
+Let's try hooking up a sensor.
+
+
+Hmm... doesn't seem to matter what settings I use, I get a load of garbage over the serial line:
+
+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+gdy��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+g�y��+�gy��+�gy��+�Y��+�fy��+���+���+����+3T�V��+����+3T�V��+3T�V��+3T�V��+��y��+��y��+3T�V��+3T�V��+3T�V��+3T�V��+�fy��+�fy��+g�y��+�fy��+�fy��+�fy��+�fy��+3T�V��+�Y��+�Y��+�gy��+gcy��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6V��+6VSFO-M-2517:20160123 bwinston$ nc -l 8234
+����+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV��+gV+gV+gV+gV+gV+gV+gV+gV+gV+gV+edy+gV+gV+gV+edy+edy+edy+edy+edy+edy+edy+edy+edy+edy+edy+edy+edy+edy+edy+edy+edy+edy+edy+edy+edy+edy+edy+edy+edy+edy+edy+edy+edy+edy+edy+edy+edy+edy+edy+edy+�ey+edy+edy+edy+edy+edy+edy+��edy+edy��+edy��+�ey��+�ey��+�ey��+�ey��+�ey��+�ey��+�ey��+egy��+egy��+�ey��+�ey��+�ey��+�ey��+�ey��+egy��+egy��+edy��+egy��+�ey��+edy��+edy��+edy��+edy��+egy��+edy��+edy��+edy��+egy��+edy��+edy��+edy��+edy��+edy��+edy��+edy��+egy��+edy��+egy��+edy��+egy��+egy��+egy��+edy��+edy��+e�y��+edy��+edy��+e�y��+edy��+e�y��+edy��+edy��+edy��+edy��+�ey��+�ey��+�ey��+egy��+�ey��+egy��+�ey��+edy��+edy��+edy��+edy��+�ey��+�ey��+egy��+egy��+edy��+edy��+gV��+gV��+gV��+gV��+֬��+֬��+֬��+gey��+eey��+eY��+�Y��+�Y��+Y�y��+gcy��+֬��+֬��+���+���+֬��+֬��+���+���+֬��+֬��+֬��+֬��+g���+�V��+�V��+gdy��+gey��+֬��+g�y��+�V��+Y�y��+Y�y��+Y�y��+Y�y��+Y�y��+�gy��+�V��+�V��+�V��+�V��+Y�y��+Y�y��+Y�y��+�gy��+g�y��+Y�y��+�Y��+edy��+���+���+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+6V��+,Y��+,Y��+dey��+dey��+edy��+edy��+e�y��+e�y��+֬��+ggy��+���+֬��+���+���+֬��+���+V��+V��+���+V��+V��+V��+V��+V��+V��+V��+V��+V��+V��+V��+V��+V��+V��+V��+6V��+6V��+6V��+6V��+6V��+6V��+V��+6V��+6V��+6V��+V��+6V��+V��+V��+V��+V��+V��+���+���+g�y��+g�y��+g�y��+g�y��+g�y��+֬��+���+g�y��+gey��+edy��+gcy��+edy��+6V��+V��+V��+���+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬��+֬^C
+SFO-M-2517:20160123 bwinston$
+
+And it doesn't at all seem related to the format as specified in the MaxBotix datasheet. I've ordered a logic analyzer to take a look at it.
+
+Okay so according to some internet data, I need to invert the signal from rs232 to ttl. Fuck :) A "max232" apparently will do it I wonder if the connector that I already have will suffice.. it's marked NS-RS232-02
+
+Hmm it's cold and I'm tired, I'm leaving this for now.

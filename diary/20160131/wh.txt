@@ -1,0 +1,16 @@
+So I have a logic analyzer now, just going to check the output of the sensor first, then I'll see if my existing RS-232 - uart does the job I'm looking for. With the raw data I'll be able to check to see if I can re-encode the netcat output too.
+
+
+Trying it from os x first.
+
+Okay that doesn't seem to work :) it shows up under usb3 but the software just says 'disconnected'.
+
+Trying it from Windows..
+
+Although actually maybe I just need to run the beta version.. yeah that connected. Ace.
+
+So the beta version is WAAAAY better. And I've had to just invert the signal and boom, we get the R etc..
+
+
+So let me just check to see if this serial port doobie sorts that out for us, in which case we could just have another plug-in component.
+
