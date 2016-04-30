@@ -11,3 +11,46 @@ The goals for tonight are:
 - formalizing the changes we made on the playa, and incorporating them into the codebase
 - generalizing the number of sensors to allow for adding and removing them (keyed on IP address maybe? I guess I could use a class C)
 
+Looking at bash history from the event, there was a lot of networking setup going on, followed by some editing of:
+
+osc.js
+main.js
+smoother.js
+
+I've taken all the files off the box to examine the differences.
+
+SFO-M-2517:node_modules bwinston$ diff ../../../fs/root/node_modules/osc.js osc.js
+22,24d21
+< var CANNON_CHANNEL = 54;
+< var cannon_fire = 0; // gets decremented when positive until 0 again (no cannon fire)
+<
+31c28
+<         var midiValue = Math.round(floatValue * 255.0);
+---
+>         var midiValue = Math.round(255.0 - (floatValue * 255.0));
+44,60d40
+<
+< 		var max = 255;
+< 		var min = 255;
+<
+< 		for (var x=0; x<output_values.length; x++) {
+< 			if (output_values[x] > max) max = output_values[x];
+< 			if (output_values[x] < min) min = output_values[x];
+< 		}
+<
+< 		if ((max - min) < 5 && min > 5 && max < 200) cannon_fire = 100; // fire the cannon!
+<
+< 		if (cannon_fire > 0) {
+< 			cannon_fire--;
+< 			my_client.send(osc.toBuffer({adress:'/midi', args: [
+< 				{type : "midi", value : { channel : 0, status: cannon_fire, data1: CANNON_CHANNEL, data2:0xb0 } }
+< 			]}));
+< 		}
+62c42
+< }
+\ No newline at end of file
+---
+> }
+
+So I inverted the sense of the midi values and removed the cannon fire (as there wasn't a physical cannon!)
+

@@ -133,7 +133,7 @@ function pollSensorNumber(sensorIndex) {
 	b.analogRead(dataPins[sensorIndex], function(x) {
 		sample[sensorIndex] = x.value.toFixed(6);
 		if (sensorIndex == debug) {
-			console.log("**".repeat(Math.round((x.value.toFixed(6) * 10))));
+			console.log("**".repeat(Math.round((x.value.toFixed(6) * 10))) + sensorIndex.toString());
 		}
 	});
 
