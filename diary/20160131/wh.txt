@@ -14,3 +14,10 @@ So the beta version is WAAAAY better. And I've had to just invert the signal and
 
 So let me just check to see if this serial port doobie sorts that out for us, in which case we could just have another plug-in component.
 
+Yeah so that's beautifully inverted the logic for me which is great, but I haven't looked at the analog quality of the output, so I'll do that now with the scope.
+
+Beautiful 3.3v signal, the noise is consistent with the noise I always get from my shitty scope :)
+
+So I guess I'll pump that into the ethernet bridge at some point just to show that works. Not now though.
+
+

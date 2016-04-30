@@ -1,0 +1,13 @@
+Previously (last week) made a new board - powered over ethernet and using a serial to ethernet bridge. See pcb/mark-ii.tar.gz.
+
+Now he beaglebone becomes an entirely network-based head for the sensor data.
+
+I've connected the TX port of the ethernet to serial bridge directly to the ranging pin of the sensor, and calculated that a single high bit will be enough to make it range, so I have to make them range in turn, taking network latency into account. Hopefully the network will go so fast that it can be basically ignored, and I can just do a very fast sub-second round-robin of all the sensors fast enough that they don't screw each other up.
+
+If not, I'll have to experiment some more with how fast it can all be done.
+
+The goals for tonight are: 
+
+- formalizing the changes we made on the playa, and incorporating them into the codebase
+- generalizing the number of sensors to allow for adding and removing them (keyed on IP address maybe? I guess I could use a class C)
+
