@@ -20,130 +20,81 @@ if (options['port'] == null) {
 	options['port'] = 8000;
 }
 
-var debug = null; // which port to output to console.
+var debug = null; // which IP to output to console.
 
-if (options['debug'] != null) {
-	try {
-		debug = parseInt(options['debug']);
-		if (debug < 0 || debug > 5) {
-			throw "Invalid sensor number";
-		}
-	} catch (ex){
-	 	console.error("Invalid sensor number " + opt.getHelp());
+o = options['debug']
+
+if (o != null) {
+	if net.isIPv4(o) {
+		debug = o;
+	} else {
+	 	console.error("Invalid sensor IP." + opt.getHelp());
 	 	process.exit();	
 	}
 }
 
-console.log("Using host " + options['host'] + " and port " + options['port']);
+console.log("I will be sending OSC to host " + options['host'] + " on UDP port " + options['port']);
+console.log("I will be listening for sensor UDP data on all IPs, on UDP port 31337.");
 
-var b = require('bonescript');
-
-var osc = require('osc.js');
-var dsp = require('dsp.js');
-
-osc.connect(options['host'], options['port']);
-
-// we poll the devices by taking the control pins high in a ring, and reading an
-// analog value from the data pin for that sensor while its control pin is high
-
-// a sensible value for each sensor is only available
-// when the controlPin for that sensor is high
-
-var controlPins = ["P9_11", "P9_12", "P9_13", "P9_14", "P9_15", "P9_16"];
-var dataPins = ["P9_33", "P9_35", "P9_36", "P9_37", "P9_39", "P9_40"];
-
-// set up the sensor control pins by setting them to low
-//  - they later go high to ask the sensors to provide accurate data
-//  - the sensor data must be read from dataPins whilst 
-//    the control pin for that sensor is high
-
-controlPins.forEach(function (pin) {
-	console.log("setting up pin " + pin);
-	if (b.pinMode(pin, b.OUTPUT)) {
-		console.log("able to set pollingControlPin mode, initializing to zero");
-		b.digitalWrite(pin, b.LOW);
-	} else {
-		console.log("unable to set pollingControlPin mode");
-	}
-
-	b.getPinMode(pin, printPinData);
-});
-
-function printPinData(x) {
-	console.log("completed setting pin mode");
-	console.log('mux = ' + x.mux);
-	console.log('pullup = ' + x.pullup);
-	console.log('slew = ' + x.slew);
-	console.log('options = ' + x.options.join(','));
-	console.log('err = ' + x.err);
-}
-
-var numberOfChannels = 4;
-var sample = new Array();
 
 /*
-this function pushes a single sample to the DSP stack, and retrieves
-a single sample from the DSP stack. If the stack decides that there is no
-data worth sending, it will return null. If the stack decides that some
-channels are not worth sending, just those values will be null.
+
+Receiving sensor UDP traffic...
+
 */
 
-function pushToFaderSon() {
-
-	// add entire last read round to the dsp stack
-
-	dsp.pushInput(sample);
-
-	var o = dsp.getOutput();
-	if (o != null) {
-		for (var i=0; i<o.length; i++) {
-			if (o[i] != null) {
-				osc.transmitFaderData(i, o[i]);
-			}
-		}
-	}
-}
-
-var count = 0;
-
-// for the debug output - needed to produce the debug 'ghetto oscilloscope'
-
-String.prototype.repeat = function( num ) {
-    return new Array( num + 1 ).join( this );
-}
+// hopefully the value from a sensor only changes when
+// we take it's control pin high!
+//
+// otherwise just accepting every value we get isn't going to work:
 
 
-function pollSensorNumber(sensorIndex) {
-	b.digitalWrite(controlPins[sensorIndex], b.HIGH); // set poll pin high
+// we receive from anywhere, accomodating new sensors with a new smoother object
+// and a new place to store a previous value:
 
-	if (sample[sensorIndex] == undefined) { // autoscale sample size to number of sensors
-		sample.push(0);
-	}
+var sensors = []; // associative array of IP addresses to previous values
+var sensor = require('sensor.js');
 
-	var nextSensorIndex = sensorIndex + 1;
+const dgram = require('dgram');
+const server = dgram.createSocket('udp4');
 
-	if (nextSensorIndex >= numberOfChannels) {
-		pushToFaderSon(); // transmit sample (if available)
-		nextSensorIndex = 0;
-		count++;
-	}
+server.on('message', (msg, rinfo) => { // received UDP packet
+  
+  console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
 
-	// analog read sensorN
-	
-	b.analogRead(dataPins[sensorIndex], function(x) {
-		sample[sensorIndex] = x.value.toFixed(6);
-		if (sensorIndex == debug) {
-			console.log("**".repeat(Math.round((x.value.toFixed(6) * 10))) + sensorIndex.toString());
-		}
-	});
+  if (sensors[rinfo.address] == undefined) {  // the first we're hearing from this sensor
+    sensors[rinfo.address] = sensor.newSensor(); // make a new sensor object for it
+  }
 
-	// close polling pin for this sensor in 1 millisecond
-	setTimeout(function () {b.digitalWrite(controlPins[sensorIndex], b.LOW)}, 1);
+  s = sensors[rinfo.address];
 
-	// read next sensor in 5 milliseconds
-	setTimeout(pollSensorNumber,3,nextSensorIndex);
-}
+  // not sure what I've got to do here - do I need to stream reconstruct the serial data? Does it come one character at a time?
 
-pollSensorNumber(0); // kick it all off
+});
 
+server.on('listening', () => {
+  var address = server.address();
+  console.log(`server listening ${address.address}:${address.port}`);
+});
+
+server.on('error', (err) => {
+  console.log(`server error:\n${err.stack}`);
+  server.close();
+  process.exit(1);
+});
+
+
+server.bind(31337);
+
+
+var osc = require('osc.js');
+osc.connect(options['host'], options['port']);
+
+
+// we poll the devices by taking the control pins high in a ring, and reading changes
+// in the values we receive over UDP.
+
+for (var sensor in sensors) {
+	console.log("polling sensor on IP " + sensor);
+});
 

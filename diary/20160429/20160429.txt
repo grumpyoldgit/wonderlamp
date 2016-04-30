@@ -54,3 +54,34 @@ SFO-M-2517:node_modules bwinston$ diff ../../../fs/root/node_modules/osc.js osc.
 
 So I inverted the sense of the midi values and removed the cannon fire (as there wasn't a physical cannon!)
 
+
+
+I've upgraded the OS to the latest packages, removed the beaglebone repo, removed the bundled node (yuk!) and included a version in /nodejs within the filesystem that gets pushed to the 'bone. I've put the version (4.4.3) in node-version.txt within the nodejs directory and added a .bashrc that prioritizes that path over all others.
+
+It deploys file and runs my code right away (which is pretty amazing shit!).
+
+So now I can use a supported version to made a UDP server the right way...
+
+'''
+const dgram = require('dgram');
+const server = dgram.createSocket('udp4');
+
+server.on('error', (err) => {
+  console.log(`server error:\n${err.stack}`);
+  server.close();
+});
+
+server.on('message', (msg, rinfo) => {
+  console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
+});
+
+server.on('listening', () => {
+  var address = server.address();
+  console.log(`server listening ${address.address}:${address.port}`);
+});
+
+server.bind(41234);
+// server listening 0.0.0.0:41234
+'''
+
+is the example from https://nodejs.org/dist/latest-v4.x/docs/api/dgram.html so it's going right in there ;)
