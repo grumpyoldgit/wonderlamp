@@ -1,0 +1,10 @@
+Received OSH Park prints, soldered one up, plugged it in (just the bench supply) and trying it now..
+
+Got link lights when I plug it in, let's see if I can remember how to speak to the damn thing...
+
+So the inversion is working, the board is sending sensor data back over the ethernet cable to the destination (my latop) just fine. But it's seemingly sensing the whole time, and updating the whole time. Hmm...
+
+Did I wire the RX pin up wrong? Yes. What a twat. So I need to be inverting that too.. Hmm... I wonder if it will be sending ranging signals all the time even if I'm not sending it data... Doesn't look like it.
+
+Okay I'll re-wire the pins and re-route the board then send it back off to the printers. OOps..
+
