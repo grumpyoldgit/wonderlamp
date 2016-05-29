@@ -1,0 +1,7 @@
+Tested new boards for electrical correctness. They work great! But the holes aren't big enough to get the pins through, so I've expanded those and made a new board with correct labelling, component placement, and sent them off to the printer.
+
+To UDP to them (for next time!) you need to use the correct UDP source port:
+
+nc -u -p 8234 10.0.0.3 20108
+
+the -p has to come early or it doesn't get used.
