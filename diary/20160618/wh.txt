@@ -150,4 +150,5 @@ I've added the network interfaces file to the 'fs' that deploys.
 
 Using node 4.4.3.. which should be 4.4.5 now, but I won't bother updating that yet.
 
+Had to install the 'net' module to call the routine which allows me to check the well-formed-ness of an IP address string. Not sure if it's the npm on OS X or the npm on the beaglebone that worked in the end... Maybe if I call the 'fs' one on OSX? That's probably best?
 
