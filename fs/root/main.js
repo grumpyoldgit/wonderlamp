@@ -24,8 +24,10 @@ var debug = null; // which IP to output to console.
 
 o = options['debug']
 
+var net = require('net'); // we'll be needing this
+
 if (o != null) {
-	if net.isIPv4(o) {
+	if (net.isIPv4(o)) {
 		debug = o;
 	} else {
 	 	console.error("Invalid sensor IP." + opt.getHelp());
@@ -96,5 +98,4 @@ osc.connect(options['host'], options['port']);
 
 for (var sensor in sensors) {
 	console.log("polling sensor on IP " + sensor);
-});
-
+}

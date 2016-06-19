@@ -1,0 +1,153 @@
+Soldered the new boards (RC3) up - two of them at least, and running them off the bench power supply. Current holding at .49 amps, which is higher than I expected but there you go. I might be able to turn some of the lights off.
+
+Need to get something ready for the end-to-end testing on Wednesday, so I guess I'll start with just showing that these boards do some good communication using the beaglebone, then I'll go on to polling them as required and processing the data properly with node.
+
+Networking setup for today is: connectivity with beaglebone over USB, and I have a 10/100 switch with three cables and and beaglebone, and two boards connected to it.
+
+I'm constantly getting punished on this project because of the fact that this fucking laptop doesn't have a fucking rj45 port.
+
+I could just disconnect one of them and run the switch here up to my home router. Feels a bit like giving in though. I could just take the beaglebone upstairs to configure it, although ideally I need to talk to it whilst it's on this network. Hm.. pretty sure I'm supposed to have a usb network adapter here somewhere.. Or maybe just forget that and don't have it have an internet connection. Possibly not needed anyway.
+
+Okay, got connectivity back, I'l proceed without access to the Internet direct from the BBB.
+
+
+Hmm... trying to remember which ip I configured the serial to ethernet bridge boards to. Maybe I didn't. Which means that I need to do that somehow, from my Windows VM. Which means I need to be on the same layer 2 network.
+
+Okay, I've taken the cable out of the BBB and connected it to my home router, so I should be able to see the sensors on the network now.
+
+I can see them fromt the Windows app "USR-TCP232-T24", configuring them with:
+
+
+Sensor 00 7E 67 63 43 84:
+
+Mode: UDP
+IP: 10.0.0.3/255.255.255.0
+gw: 10.0.0.1
+baud: 9600
+parity/data/stop: None 8 1
+module port: 20198
+
+Destination IP: 10.0.0.69
+Destination Port: 8234
+
+
+Sensor 00 5E 47 63 43 86:
+
+Mode: UDP
+IP: 10.0.0.4/255.255.255.0
+gw: 10.0.0.1
+baud: 9600
+parity/data/stop None 8 1
+module port: 20108
+
+Destination IP: 10.0.0.69
+Destination Port: 8234
+
+With those configured, I'll disconnect the ethernet cable from upstairs and plug it back into the beaglebone. Man I need another small cable! Ordered and will be here in time for the e2e testing.
+
+Next I want to set the beaglebone to talk to the sensors and see if I can't make first contact, then tie in what I've done so far with node.
+
+
+root@beaglebone:~# arp -an
+? (10.0.0.3) at 00:7e:67:63:43:84 [ether] on eth0
+? (10.0.0.4) at 00:5e:47:63:43:86 [ether] on eth0
+? (192.168.7.1) at 6c:ec:eb:ae:f7:37 [ether] on usb0
+root@beaglebone:~# ifconfig
+eth0      Link encap:Ethernet  HWaddr 6c:ec:eb:ae:f7:35
+          inet addr:10.0.0.69  Bcast:10.0.0.255  Mask:255.255.255.0
+          inet6 addr: fe80::6eec:ebff:feae:f735/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:188 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:204 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:12572 (12.2 KiB)  TX bytes:42177 (41.1 KiB)
+          Interrupt:40
+
+
+So that's up and running.. let's see if we can get some data from it!
+
+I stored the command from last time:
+
+nc -u -p 8234 10.0.0.3 20108
+
+Hmm... no tcpdump on the beaglebone so I've connected the network back up to my home LAN and connected the beaglebone in via one of the short cables. I only have one sensor now but that's enough till that works.
+
+
+
+root@beaglebone:~# cat /etc/network/interfaces
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+allow-hotplug eth0
+iface eth0 inet static
+    address 10.0.0.69
+    netmask 255.255.255.0
+    gateway 10.0.0.1
+#iface eth0 inet dhcp
+# Example to keep MAC address between reboots
+#hwaddress ether DE:AD:BE:EF:CA:FE
+
+# The secondary network interface
+#allow-hotplug eth1
+#iface eth1 inet dhcp
+
+# WiFi Example
+#auto wlan0
+#iface wlan0 inet dhcp
+#    wpa-ssid "essid"
+#    wpa-psk  "password"
+
+# Ethernet/RNDIS gadget (g_ether)
+# ... or on host side, usbnet and random hwaddr
+# Note on some boards, usb0 is automaticly setup with an init script
+iface usb0 inet static
+    address 192.168.7.2
+    netmask 255.255.255.0
+    network 192.168.7.0
+    gateway 192.168.7.1
+
+
+
+I should possibly be using that as the interfaces file within the 'fs' folder..
+
+
+
+Okay, it's ranging to order now when I hit 'enter'..
+
+��R043
+��R026
+��R043
+��R043
+��R043
+��R043
+��R043
+��R043
+��R043
+��R043
+��R043
+��R043
+��R015
+
+
+So I'll try that again now with multiple sensors.. aaand it looks like I've fucked the apt sources list on that box and can't install tcpdump. Brilliant.
+
+Hmm... I think I added the other source for node. Guess I'm removing it now? This may fuck this box completely. It's complaining about upgrading init systems? Ouch...
+
+It's removing (among other things) usbmuxd. Hope that wasn't important..
+
+going down for a reboot after this, if it doesn't come back up then I'm stopping for the night for a cry.
+
+okay, it started back up..
+
+
+I've added the network interfaces file to the 'fs' that deploys.
+
+
+Using node 4.4.3.. which should be 4.4.5 now, but I won't bother updating that yet.
+
+
