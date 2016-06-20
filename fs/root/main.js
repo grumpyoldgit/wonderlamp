@@ -5,17 +5,16 @@ var getopt = require('node-getopt');
 var sensor = require('sensor.js');
 var config = require('./sensors-config.json');
 
-var SMOOTHER_SIZE = 50;
+var SMOOTHER_SIZE = 3;
 
 // read command-line arguments
 
 opt = getopt.create([
-	['' , 'osc_host=HOST'     , 'the host running OSC to MIDI bridge.'],
-	['' , 'osc_port=[PORT]'   , 'the UDP port for the bridge on that host (8000 is the default).'],
-	['' , 'debug=IP' , 'dump the raw data from sensor with ip IP to the console.'],
-	['' , 'port=[PORT]' , 'the UDP port that this program will listen on (8234 is the default)'],
-	['h' , 'help'         , 'display this help'],
-	['v' , 'version'      , 'show version']
+	['' , 'osc_host=HOST'		, 'the host running OSC to MIDI bridge.'],
+	['' , 'osc_port=[PORT]'		, 'the UDP port for the bridge on that host (8000 is the default).'],
+	['' , 'port=[PORT]'			, 'the UDP port that this program will listen on (8234 is the default)'],
+	['h' , 'help'				, 'display this help'],
+	['v' , 'version'			, 'show version']
 ]).bindHelp();
 var options = opt.parseSystem().options; // parse command line
 
@@ -35,19 +34,11 @@ if (options['port'] == null) {
 	options['port'] = 8234;
 }
 
-if (options['debug'] != null) {
-	if (!net.isIPv4(options['debug'])) {
-	 	console.error("Invalid sensor IP." + opt.getHelp());
-	 	process.exit();	
-	}
-}
-
 // options to variables
 
 var osc_host = options['osc_host'];
 var osc_port = options['osc_port'];
 var port = options['port'];
-var debug = options['debug'];
 
 console.log("I will be sending OSC to host " + osc_host + " on UDP port " + osc_port);
 console.log("I will be listening for sensor UDP data from all IPs, on UDP port " + port);
@@ -57,7 +48,7 @@ console.log("I will be listening for sensor UDP data from all IPs, on UDP port "
 var sensors = []; // array of sensor objects
 
 config.sensors.forEach(function(s) {
-	sensors.push(sensor.createSensor(s.ip, SMOOTHER_SIZE, osc_host, osc_port));
+	sensors.push(sensor.createSensor(s.ip, s.smoother_size, osc_host, osc_port, s.channel, s.debug));
 });
 
 // Receiving sensor UDP traffic...
@@ -77,7 +68,9 @@ const server = dgram.createSocket('udp4');
 function decodeDistanceValue(serialData) {
 	// extract the serial distance in inches from the received packet,
 	// e.g.: <Buffer 00 01 ff fe 52 30 30 39 0d>
-	return parseInt(serialData.slice(5, 8).toString()); // magic output format from ultrasonics
+	// or <Buffer 52 30 34 34 0d>
+	// no idea why they're so different, but a negative slice seems to work
+	return parseInt(serialData.slice(-4, -1).toString()); // magic output format from ultrasonics
 }
 
 server.on('message', (msg, rinfo) => { // received UDP packet

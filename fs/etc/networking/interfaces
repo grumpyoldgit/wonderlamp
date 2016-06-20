@@ -6,7 +6,7 @@ allow-hotplug eth0
 iface eth0 inet static
     address 10.0.0.69
     netmask 255.255.255.0
-    gateway 10.0.0.1
+#    gateway 10.0.0.1
 #iface eth0 inet dhcp
 # Example to keep MAC address between reboots
 #hwaddress ether DE:AD:BE:EF:CA:FE

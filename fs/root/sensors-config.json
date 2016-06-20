@@ -2,11 +2,17 @@
 	"sensors": [
 		{
 			"ip": "10.0.0.4",
-			"port": "20108"
+			"port": "20108",
+			"channel": 54,
+			"smoother_size": 3,
+			"debug": false
 		},
 		{
 			"ip": "10.0.0.3",
-			"port": "20108"
+			"port": "20108",
+			"channel": 53,
+			"smoother_size": 1,
+			"debug": true
 		}
 	]
 }
