@@ -4,14 +4,14 @@
 			"ip": "10.0.0.4",
 			"port": "20108",
 			"channel": 54,
-			"smoother_size": 3,
-			"debug": false
+			"smoother_size": 10,
+			"debug": true
 		},
 		{
 			"ip": "10.0.0.3",
 			"port": "20108",
 			"channel": 53,
-			"smoother_size": 1,
+			"smoother_size": 10,
 			"debug": true
 		}
 	]
