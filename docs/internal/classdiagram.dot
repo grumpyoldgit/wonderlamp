@@ -1,0 +1,83 @@
+ digraph G {
+        fontname = "Bitstream Vera Sans"
+        fontsize = 8
+
+        node [
+                fontname = "Bitstream Vera Sans"
+                fontsize = 8
+                shape = "record"
+        ]
+
+        edge [
+                fontname = "Bitstream Vera Sans"
+                fontsize = 8
+        ]
+
+        subgraph clusterSensorFile {
+                label = "File sensor.js"
+
+                SensorNodeModuleExports [
+                        label = "{Node Module Exports|+ createSensor(ip, smootherSize, oscHost, oscPort, midiChannel, debug) : sensorObject}"
+                ]
+
+                Sensor [
+                        label = "{Sensor|+ ip : String\l+ smootherSize : int\l+ smootherSize\l+ oscHost : int\l+ oscPort : short\l+ midiChannel : byte\l+ debug : boolean\l|+ pushInput(distanceInInches) : void\l+ toString() string\l}"
+                ]
+        }
+
+        subgraph clusterSmootherFile {
+                label = "File smoother.js"
+
+                SmootherNodeModuleExports [
+                        label = "{Node Module Exports|+ createSmoother(size : int) : smootherObject}"
+                ]
+
+                Smoother [
+                        label = "{Smoother|+ size : int\l|+ pushInput(int distanceInInches) : void\l+ average() : int distanceInInches\l}"
+                ]
+        }
+
+        subgraph clusterOscFile {
+                label = "File osc.js"
+
+                Fader [
+                        label = "{Fader|+ channel : char\l+ client : clientObject\l|+ send(distanceInInches : char) : void\l}"
+                ]
+
+                Client [
+                        label = "{Client|+ host : string\l+ port : short\l|+ kill() : void\l+ send(distanceInInches : char) : void}"
+                ]
+
+                Fader -> Client
+
+                SmootherNodeModuleExports [
+                        label = "{Node Module Exports|+ createFader(host : string, port : short, channel : char) : faderObject}"
+                ]
+        }
+
+        subgraph mainFile {
+                label = "File main.js"
+
+                Main [
+                        label = "{Main|\l+ osc_host : string\l+ osc_port : short\l+ port : short\l}"
+                ]
+        }
+
+        subgraph configFile {
+                label = "sensors-config.json"
+
+                Config [
+                        label = "{Config|\l+ json_configuration : string}"
+                ]
+        }
+
+        Main -> Config
+        Main -> Sensor
+        Sensor -> Smoother
+        Sensor -> Fader
+
+        edge [
+                arrowhead = "empty"
+        ]
+
+}
