@@ -7,13 +7,13 @@ button.js - handles the press of a single button
 
 var osc = require('osc');
 var getopt = require('node-getopt');
-var b = require ('bonescript');
+var fs = require('fs');
 
 opt = getopt.create([
         ['' , 'osc_host=HOST'           , 'the host running OSC to MIDI bridge.'],
         ['' , 'osc_port=[PORT]'         , 'the UDP port for the bridge on that host (8000 is the default).'],
         ['' , 'osc_channel=CHANNEL'   , 'the osc channel that the output is sent to'],
-        ['' , 'timer=[TIME_IN_SECONDS]' , 'the number of seconds that the button LED will be down after it is pushed'],
+        ['' , 'timer=[TIME_IN_SECONDS]' , 'the minimum time between triggers'],
         ['h' , 'help'                           , 'display this help'],
         ['v' , 'version'                        , 'show version']
 ]).bindHelp();
@@ -36,23 +36,56 @@ if (options['timer'] == null) {
 }
 
 var osc_host = options['osc_host'];
-var osc_channel = optinos['osc_channel'];
+var osc_channel = options['osc_channel'];
 var osc_port = options['osc_port'];
 var timer = options['timer'];
 
 // make the client
 
-var fader = osc.createFader(osc_host, osc_port, channel);
+var fader = osc.createFader(osc_host, osc_port, osc_channel);
 
 //
 // Set up the board for inputs / outputs correctly.
 //
 
-var LED_PIN = "P8_12";
+// http://beaglebone.cameon.net/home/using-the-gpios
 
-// set input pin (button)
+var SWITCH_GPIO = "30"; // pin 11
+var LED_GPIO = "31"; // pin 13
 
-// set output pin (led)
+function _getPinString(number) {
+    return ("/sys/class/gpio/gpio" + number.toString() + "/");
+}
+
+function exportPin(number, callback) {
+    fs.writeFile("/sys/class/gpio/export", SWITCH_GPIO, callback);
+}
+
+function setPinRead(number, rising, callback) {
+    fs.writeFile(_getPinString(number) + "direction", "in", callback);
+    if (rising == true) {
+        fs.writeFile(_getPinString(number) + "edge", "rising");
+    } else {
+        fs.writeFile(_getPinString(number) + "edge", "falling");
+    }
+}
+
+function setPinWrite(number) {
+    fs.writeFile(_getPinString(number) + "direction", "out");
+}
+
+function readPin(number, blocking, callback) {
+    var buffer = new Buffer(1);
+    var mode = "r";
+    if (blocking == true) {
+        mode += "s";
+    }
+    var buttonfd = fs.open(_getPinString(SWITCH_GPIO)+"value", 'rs', function (callback) {
+        fs.read(buttonfd, 0, 1, 0, callback);
+    };
+}
+
+// TODO: set output pin (led)
 
 // handle events
 
@@ -74,14 +107,21 @@ function button_pushed() {
 }
 
 function read_button() {
-    // this has to be blocking. Might need to use native file IO interface.
-    var buffer = new Buffer(1);
+    // this has to be blocking to read an edge
     // this will only return when the button is pushed!
-    fs.read(buttonfd, 0, 1, 0, button_pushed);
+    readPin(SWITCH_GPIO, true, button_pushed);
 }
 
+// set input pin (switch)
 
-// open isn't synchronous. This might be a mistake, might need to use openSync.
-var buttonfd = fs.open("/sys/class/gpio/export/gpio7/value", 'rs', read_button);
+exportPin(SWITCH_GPIO, function () {
 
+	console.log("setting pin read");
 
+    setPinRead(SWITCH_GPIO, true, function () {
+
+        console.log("reading button..");
+
+        read_button();
+    });
+});
