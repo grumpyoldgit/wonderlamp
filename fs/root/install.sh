@@ -12,10 +12,17 @@ systemctl disable wpa_supplicant.service
 systemctl stop wpa_supplicant.service
 killall nodejs
 
-echo Installing node\'s \"forever\" package
+echo Freeing up space and upgrading OS packages...
 
 apt-get update
+apt-get remove --purge x11-common
+apt-get autoremove
 apt-get dist-upgrade
 
-npm install forever -g
+echo Installing useful tools...
 
+apt-get install tcpdump build-essential
+
+echo Installing node\'s \"forever\" package
+
+npm install forever -g
