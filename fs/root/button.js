@@ -5,14 +5,17 @@ button.js - handles the press of a single button
 */
 
 
+// https://github.com/fivdi/onoff
+
+var onoff = require ('onoff');
 var osc = require('osc');
 var getopt = require('node-getopt');
 var fs = require('fs');
 
 opt = getopt.create([
         ['' , 'osc_host=HOST'           , 'the host running OSC to MIDI bridge.'],
-        ['' , 'osc_port=[PORT]'         , 'the UDP port for the bridge on that host (8000 is the default).'],
         ['' , 'osc_channel=CHANNEL'   , 'the osc channel that the output is sent to'],
+        ['' , 'osc_port=[PORT]'         , 'the UDP port for the bridge on that host (8000 is the default).'],
         ['' , 'timer=[TIME_IN_SECONDS]' , 'the minimum time between triggers'],
         ['h' , 'help'                           , 'display this help'],
         ['v' , 'version'                        , 'show version']
@@ -50,78 +53,83 @@ var fader = osc.createFader(osc_host, osc_port, osc_channel);
 
 // http://beaglebone.cameon.net/home/using-the-gpios
 
-var SWITCH_GPIO = "30"; // pin 11
+var BUTTON_GPIO = "30"; // pin 11
 var LED_GPIO = "31"; // pin 13
 
-function _getPinString(number) {
-    return ("/sys/class/gpio/gpio" + number.toString() + "/");
+// Force unexport first, in case we didn't shut down cleanly last time
+
+try {
+    fs.writeFileSync("/sys/class/gpio/unexport", BUTTON_GPIO);
+} catch (err) {}
+
+try {
+    fs.writeFileSync("/sys/class/gpio/unexport", LED_GPIO);
+} catch (err) {}
+
+var LED_ON = 1;
+var LED_OFF = 0;
+
+function led_on () {
+    console.log("... led on");
+    led.writeSync(LED_ON);
+}
+function led_off() {
+    console.log("... led off");
+    led.writeSync(LED_OFF);
 }
 
-function exportPin(number, callback) {
-    fs.writeFile("/sys/class/gpio/export", SWITCH_GPIO, callback);
-}
+// do reading / state machine...
 
-function setPinRead(number, rising, callback) {
-    fs.writeFile(_getPinString(number) + "direction", "in", callback);
-    if (rising == true) {
-        fs.writeFile(_getPinString(number) + "edge", "rising");
-    } else {
-        fs.writeFile(_getPinString(number) + "edge", "falling");
+var listening = true; // ISR fast-close path
+
+var counter = 0;
+
+function button_isr() {
+    if (listening == false) { // if we're still handling the last press
+        return;
     }
+    listening = false;
+
+    counter++;
+    console.log("Button pushed " + counter.toString() + " time(s)");
+
+    // reset OSC device after 1s
+
+    console.log("... setting fader");
+    fader.send(254);
+
+    setTimeout(function() {
+        console.log("... resetting fader");
+        fader.send(1);
+    }, 1000);
+
+    // reset LED and button listening after ~ 20 minutes
+
+    led_off();
+
+    setTimeout(function() {
+        console.log("... resetting button");
+        led_on();
+        listening = true;
+    }, timer * 1000);
 }
 
-function setPinWrite(number) {
-    fs.writeFile(_getPinString(number) + "direction", "out");
+// initialize devices
+
+console.log("Initializing...");
+
+var button = onoff.Gpio(BUTTON_GPIO, "in", "both");
+var led = onoff.Gpio(LED_GPIO, "out");
+
+led_on();
+
+button.watch(button_isr);
+
+function shutdown() {
+    console.log("Shutting down.");
+    led_off();
+    process.exit(0);
 }
 
-function readPin(number, blocking, callback) {
-    var buffer = new Buffer(1);
-    var mode = "r";
-    if (blocking == true) {
-        mode += "s";
-    }
-    var buttonfd = fs.open(_getPinString(SWITCH_GPIO)+"value", 'rs', function (callback) {
-        fs.read(buttonfd, 0, 1, 0, callback);
-    };
-}
-
-// TODO: set output pin (led)
-
-// handle events
-
-function button_ready() {
-    // switch on the LED
-    b.digitalWrite(LED_PIN, b.HIGH);
-    setImmediate(read_button);
-}
-
-function button_pushed_complete() {
-    fader.send(0);
-}
-
-function button_pushed() {
-    b.digitalWrite(LED_PIN, b.LOW);
-    fader.send(255);
-    setTimeout(button_pushed_complete, 200); // resets after 200 ms
-    setTimeout(button_ready, timer * 1000); // resets after ~ 20 minutes
-}
-
-function read_button() {
-    // this has to be blocking to read an edge
-    // this will only return when the button is pushed!
-    readPin(SWITCH_GPIO, true, button_pushed);
-}
-
-// set input pin (switch)
-
-exportPin(SWITCH_GPIO, function () {
-
-	console.log("setting pin read");
-
-    setPinRead(SWITCH_GPIO, true, function () {
-
-        console.log("reading button..");
-
-        read_button();
-    });
-});
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
