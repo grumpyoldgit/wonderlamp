@@ -10,4 +10,4 @@ else
 	exit
 fi 
 
-rsync -avz --no-o --no-g -e ssh --progress fs/* root@$BONE:/
+rsync -avz --no-o --no-g -e 'ssh -oStrictHostKeyChecking=no' --progress fs/* root@$BONE:/
