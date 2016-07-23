@@ -1,6 +1,7 @@
-total 8646008
-drwxr-xr-x   5 bwinston  staff   170B Jul  8 23:14 .
-drwxr-xr-x  15 bwinston  staff   510B Jul  8 23:13 ..
--rw-r-----@  1 bwinston  staff   3.6G Mar 28 11:12 bone-debian-7.8-lxde-4gb-armhf-2015-03-01-4gb.img
--rw-r-----@  1 bwinston  staff   522M Mar 28 11:11 bone-debian-7.8-lxde-4gb-armhf-2015-03-01-4gb.img.xz
--rw-r--r--   1 bwinston  staff     0B Jul  8 23:14 ls-lah.txt
+total 15609208
+drwxr-xr-x   6 bwinston  staff   204B Jul 23 11:22 .
+drwxr-xr-x  18 bwinston  staff   612B Jul 21 09:58 ..
+-rw-r-----@  1 bwinston  staff   3.6G Mar 28  2015 bone-debian-7.8-lxde-4gb-armhf-2015-03-01-4gb.img
+-rw-r-----@  1 bwinston  staff   522M Mar 28  2015 bone-debian-7.8-lxde-4gb-armhf-2015-03-01-4gb.img.xz
+-rw-r--r--@  1 bwinston  staff   3.3G Jul 23 11:00 bone-debian-8.4-lxqt-4gb-armhf-2016-05-13-4gb.img
+-rw-r--r--   1 bwinston  staff     0B Jul 23 11:22 ls-lah.txt
