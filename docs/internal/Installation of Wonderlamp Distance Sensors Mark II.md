@@ -5,6 +5,19 @@
 For each sensor unit:
 * Build (solder, press-together board, press-together box, tape)
 * Configure (proper settings below)
+
+```
+mode: UDP Mode
+ip address: 10.0.0.10x
+netmask: 255.255.255.0
+df gw: 10.0.0.1
+baud: 9600 (8-N-1)
+module port: 20108
+destination ip: 10.0.0.69
+destination port: 8234
+```
+I suggest you label the modules with 'x'.
+
 * Label (mark host ID within subnet on the label)
 * Install according to wiring diagram
 
