@@ -118,7 +118,7 @@ function sendPollPacket() {
 		if (index >= sensors.length) {
 			index = 0;
 		}
-		setTimeout(sendPollPacket, 100);
+		setTimeout(sendPollPacket, 10);
 	});
 }
 
