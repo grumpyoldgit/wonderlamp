@@ -4,7 +4,7 @@
 		{
 			"ip": "10.0.0.101",
 			"port": "20108",
-			"channel": 1,
+			"channel": 4,
 			"smoother_size": 10,
 			"debug": true
 		}
