@@ -5,7 +5,7 @@
 			"ip": "10.0.0.101",
 			"port": "20108",
 			"channel": 101,
-			"smoother_size": 20,
+			"smoother_size": 50,
 			"debug": true
 		},
 		{
