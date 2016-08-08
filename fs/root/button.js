@@ -45,7 +45,7 @@ var timer = options['timer'];
 
 // make the client
 
-var fader = osc.createFader(osc_host, osc_port, osc_channel);
+var toggle = osc.createToggle(osc_host, osc_port, osc_channel);
 
 //
 // Set up the board for inputs / outputs correctly.
@@ -95,13 +95,13 @@ function button_isr() {
 
     // reset OSC device after 1s
 
-    console.log("... setting fader");
-    fader.send(254);
+    console.log("... setting toggle");
+    toggle.send(true);
 
     setTimeout(function() {
-        console.log("... resetting fader");
-        fader.send(1);
-    }, 1000);
+        console.log("... resetting toggle");
+        toggle.send(false);
+    }, 30 * 1000); // 30 seconds before toggle gets reset to lightjams
 
     // reset LED and button listening after ~ 20 minutes
 
