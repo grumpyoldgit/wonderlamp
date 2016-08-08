@@ -13,12 +13,13 @@ var getopt = require('node-getopt');
 var fs = require('fs');
 
 opt = getopt.create([
-        ['' , 'osc_host=HOST'           , 'the host running OSC to MIDI bridge.'],
-        ['' , 'osc_channel=CHANNEL'   , 'the osc channel that the output is sent to'],
-        ['' , 'osc_port=[PORT]'         , 'the UDP port for the bridge on that host (8000 is the default).'],
-        ['' , 'timer=[TIME_IN_SECONDS]' , 'the minimum time between triggers'],
-        ['h' , 'help'                           , 'display this help'],
-        ['v' , 'version'                        , 'show version']
+        ['' , 'osc_host=HOST'                      , 'the host running OSC to MIDI bridge.'],
+        ['' , 'osc_channel=CHANNEL'                , 'the osc channel that the output is sent to'],
+        ['' , 'osc_port=[PORT]'                    , 'the UDP port for the bridge on that host (8000 is the default).'],
+        ['' , 'osc_duration=[TIME_IN_SECONDS]'     , 'time OSC toggle is high (30s is the default)'],
+        ['' , 'button_duration=[TIME_IN_SECONDS]'  , 'minimum time between button presses (20m is the default)']
+        ['h' , 'help'                              , 'display this help'],
+        ['v' , 'version'                           , 'show version']
 ]).bindHelp();
 var options = opt.parseSystem().options; // parse command line
 
@@ -34,14 +35,18 @@ if (options['osc_host'] == null || options['osc_channel'] == null) {
 if (options['osc_port'] == null) {
     options['osc_port'] = 8000;
 }
-if (options['timer'] == null) {
-    options['timer'] = 20*60; // 20 minutes default
+if (options['button_duration'] == null) {
+    options['button_duration'] = 20*60; // 20 minutes default
+}
+if (options['osc_duration'] == null) {
+    options['osc_duration'] = 30; // 30 seconds default
 }
 
 var osc_host = options['osc_host'];
 var osc_channel = options['osc_channel'];
 var osc_port = options['osc_port'];
-var timer = options['timer'];
+var osc_duration = options['osc_duration'];
+var button_duration = options['button_duration'];
 
 // make the client
 
@@ -101,7 +106,7 @@ function button_isr() {
     setTimeout(function() {
         console.log("... resetting toggle");
         toggle.send(false);
-    }, 30 * 1000); // 30 seconds before toggle gets reset to lightjams
+    }, osc_duration * 1000); // seconds before toggle gets reset to lightjams
 
     // reset LED and button listening after ~ 20 minutes
 
@@ -111,7 +116,7 @@ function button_isr() {
         console.log("... resetting button");
         led_on();
         listening = true;
-    }, timer * 1000);
+    }, button_duration * 1000); // seconds before the button can be pressed again
 }
 
 // initialize devices
