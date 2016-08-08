@@ -17,7 +17,7 @@ opt = getopt.create([
         ['' , 'osc_channel=CHANNEL'                , 'the osc channel that the output is sent to'],
         ['' , 'osc_port=[PORT]'                    , 'the UDP port for the bridge on that host (8000 is the default).'],
         ['' , 'osc_duration=[TIME_IN_SECONDS]'     , 'time OSC toggle is high (30s is the default)'],
-        ['' , 'button_duration=[TIME_IN_SECONDS]'  , 'minimum time between button presses (20m is the default)']
+        ['' , 'button_duration=[TIME_IN_SECONDS]'  , 'minimum time between button presses (20m is the default)'],
         ['h' , 'help'                              , 'display this help'],
         ['v' , 'version'                           , 'show version']
 ]).bindHelp();
