@@ -4,9 +4,79 @@
 		{
 			"ip": "10.0.0.101",
 			"port": "20108",
-			"channel": 4,
+			"channel": 101,
 			"smoother_size": 10,
 			"debug": true
+		},
+		{
+			"ip": "10.0.0.102",
+			"port": "20108",
+			"channel": 102,
+			"smoother_size": 10,
+			"debug": false
+		},
+		{
+			"ip": "10.0.0.103",
+			"port": "20108",
+			"channel": 103,
+			"smoother_size": 10,
+			"debug": false
+		},
+		{
+			"ip": "10.0.0.104",
+			"port": "20108",
+			"channel": 104,
+			"smoother_size": 10,
+			"debug": false
+		},
+		{
+			"ip": "10.0.0.105",
+			"port": "20108",
+			"channel": 105,
+			"smoother_size": 10,
+			"debug": false
+		},
+		{
+			"ip": "10.0.0.106",
+			"port": "20108",
+			"channel": 106,
+			"smoother_size": 10,
+			"debug": false
+		},
+		{
+			"ip": "10.0.0.107",
+			"port": "20108",
+			"channel": 107,
+			"smoother_size": 10,
+			"debug": false
+		},
+		{
+			"ip": "10.0.0.108",
+			"port": "20108",
+			"channel": 108,
+			"smoother_size": 10,
+			"debug": false
+		},
+		{
+			"ip": "10.0.0.109",
+			"port": "20108",
+			"channel": 109,
+			"smoother_size": 10,
+			"debug": false
+		},
+		{
+			"ip": "10.0.0.110",
+			"port": "20108",
+			"channel": 110,
+			"smoother_size": 10,
+			"debug": false
+		},
+		{
+			"ip": "10.0.0.111",
+			"port": "20108",
+			"channel": 111,
+			"smoother_size": 10,
+			"debug": false
 		}
 	]
 }
