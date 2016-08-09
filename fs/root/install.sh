@@ -10,6 +10,7 @@ systemctl disable node-red.service
 systemctl stop node-red.service
 systemctl disable wpa_supplicant.service
 systemctl stop wpa_supplicant.service
+systemctl disable connman.service
 killall nodejs
 
 echo Freeing up space and upgrading OS packages...
