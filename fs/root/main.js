@@ -48,7 +48,7 @@ console.log("I will be listening for sensor UDP data from all IPs, on UDP port "
 var sensors = []; // array of sensor objects
 
 config.sensors.forEach(function(s) {
-	sensors.push(sensor.createSensor(s.ip, s.smoother_size, osc_host, osc_port, s.channel, s.debug, min, max, timeout));
+	sensors.push(sensor.createSensor(s.ip, s.smoother_size, osc_host, osc_port, s.channel, s.debug, s.min, s.max, s.timeout));
 });
 
 // Receiving sensor UDP traffic...
