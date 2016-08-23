@@ -7,7 +7,7 @@
 			"channel": 101,
 			"smoother_size": 30,
 			"debug": true,
-			"min": 5,
+			"min": 10,
 			"max": 65,
 			"timeout": 900
 		},
